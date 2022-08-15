@@ -64,8 +64,7 @@
 
             <md-table-row v-for="log in displayLogs" :key="log.id">
               <md-table-cell class="no-wrap">
-                <md-checkbox v-if="!logCanSync(log) || isRefreshingEntries || isSyncing" v-model="checkedLogs" disabled :value="log" />
-                <md-checkbox v-else v-model="checkedLogs" :value="log" />
+                <md-checkbox :disabled="!logCanSync(log) || isRefreshingEntries || isSyncing" v-model="checkedLogs" :value="log" />
               </md-table-cell>
               <md-table-cell class="no-wrap">
                 <a v-if="log.issue != 'NO ID'" :href="jiraUrl + '/browse/' + log.issue" target="_blank">{{ log.issue }}</a><a v-else class="timeRed">{{ log.issue }}</a>
@@ -118,7 +117,8 @@
         </div>
       </div>
       <div class="button__container">
-        <md-button :disabled="isRefreshingEntries || isSyncing" class="md-raised md-accent" @click="syncToJira">
+        <md-button :disabled="isRefreshingEntries || isSyncing || !checkedLogs.length" class="md-raised md-accent" 
+          @click="syncToJira">
           <span>{{ isRefreshingEntries ? "Please wait..." : (isSyncing ? "Logging..." : "Log work") }}</span>
         </md-button>
       </div>
@@ -588,12 +588,10 @@ export default {
       let newEndDate = moment(this.endDate).add(ndays, 'days');
       this.startDate = new Date(newStartDate.startOf('day'));
       this.endDate = new Date(newEndDate.startOf('day'));
-      this.refreshEntries();
     },
     moveToday () {
       this.startDate = new Date(moment().startOf('day'));
       this.endDate = this.startDate;
-      this.refreshEntries();
     },
     clockworkUrl () {
       let startDate = moment(this.startDate)
