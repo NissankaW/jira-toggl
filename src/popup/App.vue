@@ -387,9 +387,9 @@ export default {
     },
     matchIssueId (name) {
       if (this.allowNumbersInId) {
-        return name.match(/^[A-Z][A-Z,0-9]*-[0-9]*/);
+        return name.match(/^([a-zA-Z][a-zA-Z0-9]*-[0-9]+)/);
       } else {
-        return name.match(/^[A-Z]*-[0-9]*/);
+        return name.match(/^([a-zA-Z][a-zA-Z]*-[0-9]+)/)
       }
     },
     getIssue (log) {
@@ -398,7 +398,7 @@ export default {
         if (_self.jiraIssueInDescription && log.description != null) {
           const parsedIssue = _self.matchIssueId(log.description.trim());
           if (parsedIssue) {
-            resolve(parsedIssue[0]);
+            resolve(parsedIssue[0]?.toUpperCase());
           }
         } else if (log.description == null) {
           log.description = ''; // Set empty string (not null), to avoid reference null problems
@@ -414,7 +414,7 @@ export default {
             .then(function (issue) {
               const parsedIssue = _self.matchIssueId(issue.data.data.name);
               if (parsedIssue) {
-                resolve(parsedIssue[0]);
+                resolve(parsedIssue[0]?.toUpperCase);
               } else {
                 reject(log);
               }
